@@ -6,7 +6,7 @@
 #include "include/varint.h"
 
 int main() {
-   std::vector<unsigned char> varint = readFile("../../varint/150.uint64");
+   std::vector<unsigned char> varint = readFile("../../varint/1.uint64");
 
    for (auto byteNum : varint) {
       printf("%02x", byteNum);
@@ -17,13 +17,29 @@ int main() {
 
    uint64_t varintDec = bytesToInt(varint);
 
-   std::cout << varintDec << std::endl;
+   std::cout << "Value to be decoded: " << varintDec << std::endl;
+
+   std::vector<unsigned char> encodedVarint = encodeVarint(varintDec);
+
+   printf("Encoded Value: ");
    
+   for (auto byteNum : encodedVarint) {
+      printf("%02x", byteNum);
+   }
+
     return 0;
 }
 
 std::vector<unsigned char> encodeVarint(uint64_t value) {
-   return std::vector<unsigned char>();
+   std::vector<unsigned char> result;
+
+   for (int i = 0; i < sizeof(value)/7; ++i) {
+      unsigned char bytePortion = value << (i * 7);
+      result.push_back(bytePortion);
+      result.push_back(0b1);
+   }
+
+   return result;
 }
 
 uint64_t bytesToInt(const std::vector<unsigned char>& bytes) {
